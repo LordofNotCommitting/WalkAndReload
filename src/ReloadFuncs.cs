@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using MGSC;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Numerics;
 using UnityEngine;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
@@ -17,12 +18,13 @@ namespace WalkAndReload
             if (temp_player.CreatureData.Inventory.CurrentWeapon != null && temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>().WeaponClass != WeaponClass.GrenadeLauncher && !temp_player.CreatureData.Inventory.CurrentWeapon.Locked)
             {
                 WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
-                if ((weaponRecord.ReloadDuration == 1))
+                int temp_sum = weaponRecord.ReloadDuration + temp_player.Mercenary.CreatureData.ReloadBonus;
+                if ((temp_sum == 1))
                 {
                     int woundeffect_reload = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectReloadDuration>((WoundEffectReloadDuration w) => (float)w.Value));
 
                     int woundeffect_actiondamage = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectActionDamage>((WoundEffectActionDamage w) => (float)w.DamagePerTurn));
-                    
+
                     if (woundeffect_reload <= 0 && woundeffect_actiondamage == 0)
                     {
                         if (ReloadWeaponSystem.CanReload(temp_player.CreatureData.Inventory, temp_player.CreatureData.Inventory.CurrentWeapon, temp_player.CreatureData.Inventory.Storages, true))
