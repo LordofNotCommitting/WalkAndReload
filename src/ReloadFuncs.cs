@@ -19,6 +19,7 @@ namespace WalkAndReload
             {
                 WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
                 int temp_sum = weaponRecord.ReloadDuration + temp_player.Mercenary.CreatureData.ReloadBonus;
+                temp_sum = Mathf.Max(temp_sum, 1);
                 if ((temp_sum == 1))
                 {
                     int woundeffect_reload = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectReloadDuration>((WoundEffectReloadDuration w) => (float)w.Value));
