@@ -7,6 +7,9 @@ On "Full Processing Mode" - which can be enabled on MCM - it factors in weapon r
 
 
 Changelog:
+v1.11
+Now auto loading lite will now function if [weapon reload - merc reload reduction] = 1AP. Which is same as weapon UI.
+
 
 v1.1
 
