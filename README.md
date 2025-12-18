@@ -10,7 +10,7 @@ Changelog:
 
 v1.12
 
-Should work with new reload talent.
+Should work with new reload talent from 0.9.8.2.
 
 v1.11
 
