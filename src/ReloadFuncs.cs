@@ -17,10 +17,18 @@ namespace WalkAndReload
         {
             if (temp_player.CreatureData.Inventory.CurrentWeapon != null && temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>().WeaponClass != WeaponClass.GrenadeLauncher && !temp_player.CreatureData.Inventory.CurrentWeapon.Locked)
             {
-                WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
-                int temp_sum = weaponRecord.ReloadDuration + temp_player.Mercenary.CreatureData.ReloadBonus;
-                temp_sum = Mathf.Max(temp_sum, 1);
-                if ((temp_sum == 1))
+                int reload_timer = 2;
+                int perkParameterSumInt = PerkSystem.GetPerkParameterSumInt(temp_player.CreatureData, "IConstReload", WeaponClass.None, WeaponSubClass.None);
+                if (perkParameterSumInt > 0)
+                {
+                    reload_timer = perkParameterSumInt;
+                }
+                else {
+                    WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
+                    reload_timer = weaponRecord.ReloadDuration + temp_player.Mercenary.CreatureData.ReloadBonus;
+                    reload_timer = Mathf.Max(reload_timer, 1);
+                }
+                if ((reload_timer == 1))
                 {
                     int woundeffect_reload = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectReloadDuration>((WoundEffectReloadDuration w) => (float)w.Value));
 
@@ -59,24 +67,33 @@ namespace WalkAndReload
                 int woundeffect_actiondamage = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectActionDamage>((WoundEffectActionDamage w) => (float)w.DamagePerTurn));
 
                 if (woundeffect_actiondamage == 0) {
-                    WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
-                    int woundeffect_reload = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectReloadDuration>((WoundEffectReloadDuration w) => (float)w.Value));
 
-                    int reload_timer = 0;
-                    BasePickupItem first = temp_player.CreatureData.Inventory.VestSlot.First;
-                    VestRecord vestRecord = (first != null) ? first.Record<VestRecord>() : null;
-                    int backpack_bonus = 0;
-                    if (temp_player.CreatureData.Inventory.CurrentWeapon.Storage == temp_player.CreatureData.Inventory.ServoArmSlot)
+                    int reload_timer = 2;
+
+                    int perkParameterSumInt = PerkSystem.GetPerkParameterSumInt(temp_player.CreatureData, "IConstReload", WeaponClass.None, WeaponSubClass.None);
+                    if (perkParameterSumInt > 0)
                     {
-                        BasePickupItem first2 = temp_player.CreatureData.Inventory.BackpackSlot.First;
-                        if (first2 != null)
-                        {
-                            BackpackRecord backpackRecord = first2.Record<BackpackRecord>();
-                            backpack_bonus += backpackRecord.ReloadTurnMod;
-                        }
+                        reload_timer = perkParameterSumInt;
                     }
-                    int temp_sum = weaponRecord.ReloadDuration + ((vestRecord != null) ? vestRecord.ReloadTurnMod : 0) + backpack_bonus + temp_player.Mercenary.CreatureData.ReloadBonus + woundeffect_reload;
-                    reload_timer = Mathf.Max(temp_sum, 1);
+                    else {
+                        WeaponRecord weaponRecord = temp_player.CreatureData.Inventory.CurrentWeapon.Record<WeaponRecord>();
+                        int woundeffect_reload = Mathf.RoundToInt(temp_player.CreatureData.EffectsController.SumEffectsValue<WoundEffectReloadDuration>((WoundEffectReloadDuration w) => (float)w.Value));
+
+                        BasePickupItem first = temp_player.CreatureData.Inventory.VestSlot.First;
+                        VestRecord vestRecord = (first != null) ? first.Record<VestRecord>() : null;
+                        int backpack_bonus = 0;
+                        if (temp_player.CreatureData.Inventory.CurrentWeapon.Storage == temp_player.CreatureData.Inventory.ServoArmSlot)
+                        {
+                            BasePickupItem first2 = temp_player.CreatureData.Inventory.BackpackSlot.First;
+                            if (first2 != null)
+                            {
+                                BackpackRecord backpackRecord = first2.Record<BackpackRecord>();
+                                backpack_bonus += backpackRecord.ReloadTurnMod;
+                            }
+                        }
+                        int temp_sum = weaponRecord.ReloadDuration + ((vestRecord != null) ? vestRecord.ReloadTurnMod : 0) + backpack_bonus + temp_player.Mercenary.CreatureData.ReloadBonus + woundeffect_reload;
+                        reload_timer = Mathf.Max(temp_sum, 1);
+                    }
                     if (reload_timer == 1)
                     {
                         if (ReloadWeaponSystem.CanReload(temp_player.CreatureData.Inventory, temp_player.CreatureData.Inventory.CurrentWeapon, temp_player.CreatureData.Inventory.Storages, true))

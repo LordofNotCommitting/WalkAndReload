@@ -20,7 +20,6 @@ namespace WalkAndReload
         static bool full_Processing = Plugin.ConfigGeneral.ModData.GetConfigValue<bool>("Full_Processing", false);
         static void Postfix(ref Player __instance)
         {
-            ReloadFuncs temp;
             if (!full_Processing)
             {
                 ReloadFuncs.Light_Check(ref __instance);
